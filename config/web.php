@@ -12,7 +12,28 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+      'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'enableStrictParsing' => false,
+            'rules' => [
+              [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'currencies',
+                'tokens' => [
+                   '{id}' => '<id:\w+>'
+                 ],
+              ],
+              ['pattern' => 'curencies/index', 'route' => 'curencies/index'],
+              ['pattern' => 'curencies/parse', 'route' => 'curencies/parse'],
+              ['pattern' => 'curencies/<id>', 'route' => 'curencies/view'],
+          ],
+        ],
         'request' => [
+          'parsers' => [
+            'application/json' => 'yii\web\JsonParser',
+        ],
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'q0fJTC_sm83b_8AvlgcQNlkns3HjEv_6',
         ],
