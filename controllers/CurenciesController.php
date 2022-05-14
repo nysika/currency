@@ -5,10 +5,12 @@ namespace app\controllers;
 use yii\web\Controller;
 use yii\data\Pagination;
 use app\models\Curencies;
-use app\models\CurenciesSearch;
+use app\models\Currencyhistory;
+//use app\models\CurenciesSearch;
 use app\controllers\Yii;
 use yii\data\ActiveDataProvider;
-use app\controllers\NotFoundHttpException;
+//use app\controllers\NotFoundHttpException;
+
 
 class CurenciesController extends Controller
 {
@@ -57,9 +59,25 @@ class CurenciesController extends Controller
     public function actionParse()
     {
         $curencies = simplexml_load_file("http://www.cbr.ru/scripts/XML_daily.asp");
+        $date = date_create_from_format('d.m.Y', $curencies['Date']);
+
         foreach ($curencies->Valute as $valute)
         {
-            $currency = Curencies::find()->where(['id' => strval($valute["ID"])])->one();
+            $currency = Curencies::findOne([
+              'id' => strval($valute["ID"]),
+            ]);
+            $curencyHistory = Currencyhistory::findOne([
+                'valute_id' => strval($valute["ID"]),
+                'date' => date_format($date, 'Y-m-d'),
+            ]);
+            if (empty($curencyHistory)) {
+                $curencyHistory = new Currencyhistory();
+                $curencyHistory->valute_id = strval($valute["ID"]);
+                $curencyHistory->rate = str_replace(',', '.', $valute->Value);
+                $curencyHistory->date = date_format($date, 'Y-m-d');
+                $curencyHistory->save();
+            }
+
 
             if ($currency)
             {
@@ -75,7 +93,7 @@ class CurenciesController extends Controller
                 $currency->nominal = $valute->Nominal;
                 $currency->name = $valute->Name;
                 $currency->rate = str_replace(',', '.', $valute->Value);
-                $currency->insert();
+                $currency->save();
             }
         }
     }
