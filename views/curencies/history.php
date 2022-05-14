@@ -12,7 +12,9 @@ use yii\helpers\ArrayHelper;
 <div class="currency-form">
     <?php $form = ActiveForm::begin(['method' => 'get']); ?>
 
-    <?= $form->field($searchModel, 'valute_id')->dropDownList(ArrayHelper::map($currenciesList,'id','name')); ?>
+    <?= $form->field($searchModel, 'valute_id')->dropDownList(ArrayHelper::map($currenciesList,'id','name'), [
+        'prompt' => 'Select currency'
+    ]); ?>
 
     <?= $form->field($searchModel, 'date')->widget(DatePicker::class, [
       'dateFormat' => 'yyyy-MM-dd',
