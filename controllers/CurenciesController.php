@@ -6,11 +6,10 @@ use yii\web\Controller;
 use yii\data\Pagination;
 use app\models\Curencies;
 use app\models\Currencyhistory;
-//use app\models\CurenciesSearch;
+use app\models\CurrencySearch;
 use app\controllers\Yii;
 use yii\data\ActiveDataProvider;
-//use app\controllers\NotFoundHttpException;
-
+use yii\web\NotFoundHttpException;
 
 class CurenciesController extends Controller
 {
@@ -20,28 +19,34 @@ class CurenciesController extends Controller
     {
         $dataProvider = new ActiveDataProvider([
           'query' => Curencies::find(),
-          'sort' => ['defaultOrder'=>'name'],
+          'sort' => [
+              'defaultOrder' => [
+                  'name' => SORT_ASC,
+              ]
+          ],
           'pagination' => [
               'pageSize' => self::POSTS_PER_PAGE,
           ],
         ]);
         return $this->render('index', [
           'dataProvider' => $dataProvider,
+          'template' => '_currency',
         ]);
-      /*  $query = Curencies::find();
-        $pagination = new Pagination([
-            'defaultPageSize' => self::POSTS_PER_PAGE,
-            'totalCount' => $query->count(),
+    }
+
+    public function actionHistory()
+    {
+        $searchModel = new CurrencySearch();
+        $dataProvider = $searchModel->search(\Yii::$app->request->queryParams);
+        $dataProvider->sort->defaultOrder = ['date' => SORT_DESC];
+        $dataProvider->pagination = ['pageSize' => self::POSTS_PER_PAGE];
+
+        return $this->render('history', [
+           'searchModel' => $searchModel,
+           'dataProvider' => $dataProvider,
+           'currenciesList' => Curencies::find()->all(),
+           'template' => '_history',
         ]);
-
-        $curencies = $query->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-        return $this->render('index', [
-            'curencies' => $curencies,
-            'pagination' => $pagination,
-        ]);*/
-
     }
 
     public function actionView($id)
@@ -61,8 +66,7 @@ class CurenciesController extends Controller
         $curencies = simplexml_load_file("http://www.cbr.ru/scripts/XML_daily.asp");
         $date = date_create_from_format('d.m.Y', $curencies['Date']);
 
-        foreach ($curencies->Valute as $valute)
-        {
+        foreach ($curencies->Valute as $valute) {
             $currency = Curencies::findOne([
               'id' => strval($valute["ID"]),
             ]);
@@ -79,13 +83,10 @@ class CurenciesController extends Controller
             }
 
 
-            if ($currency)
-            {
+            if ($currency) {
                 $currency->rate = str_replace(',', '.', $valute->Value);
                 $currency->update();
-            }
-            else
-            {
+            } else {
                 $currency = new Curencies();
                 $currency->id = strval($valute["ID"]);
                 $currency->valute_numcode = $valute->NumCode;

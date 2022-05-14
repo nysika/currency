@@ -27,7 +27,8 @@ $config = [
               ],
               ['pattern' => 'curencies/index', 'route' => 'curencies/index'],
               ['pattern' => 'curencies/parse', 'route' => 'curencies/parse'],
-              ['pattern' => 'curencies/<id>', 'route' => 'curencies/view'],
+              ['pattern' => 'curencies/history', 'route' => 'curencies/history'],
+              ['pattern' => 'curencies/<id:\w+>', 'route' => 'curencies/view'],
           ],
         ],
         'request' => [
