@@ -17,13 +17,7 @@ class CurrenciesController extends ActiveController
         $behaviors['authenticator'] = [
           'class' => CompositeAuth::class,
           'authMethods' => [
-<<<<<<< HEAD
               HttpBearerAuth::class,
-=======
-              //HttpBasicAuth::className(),
-              HttpBearerAuth::class,
-              //QueryParamAuth::class,
->>>>>>> fb50a65 (bearer auth)
           ],
         ];
 
