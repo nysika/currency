@@ -21,9 +21,10 @@ $config = [
               [
                 'class' => 'yii\rest\UrlRule',
                 'controller' => 'currencies',
+                'except' => ['delete', 'create', 'update'],
                 'tokens' => [
-                   '{id}' => '<id:\w+>'
-                 ],
+                   '{id}' => '<id:\w+>',
+                 ],                 
               ],
               ['pattern' => 'curencies/index', 'route' => 'curencies/index'],
               ['pattern' => 'curencies/parse', 'route' => 'curencies/parse'],
